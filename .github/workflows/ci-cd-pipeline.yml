@@ -1,4 +1,4 @@
-name: build-test
+name: build-testUnit-deploy-testUI
 
 on:
   push:
@@ -20,7 +20,7 @@ jobs:
         cache: 'npm'
     - name: Install npm dependencies
       run: npm install
-    - name: Run Unit Tests
+    - name: Run unit tests
       run: npm run test:unit
     - name: Display SoftUni Username
       run: echo 'dtuleva'
@@ -34,3 +34,23 @@ jobs:
       with:
         service-id: ${{ secrets.RENDER_SERVICE_ID }}
         api-key: ${{ secrets.RENDER_API_KEY }}
+
+  test-ui:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: Mock wait for deploy to complete(30 seconds)
+      run: sleep 30
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Use Node.js 18.x
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18.x
+        cache: 'npm'
+    - name: Install npm dependencies
+      run: npm install
+    - name: Setup Playwright
+      run: npx playwright install
+    - name: Run UI tests
+      run: npm run test:ui        
